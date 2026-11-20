@@ -17,8 +17,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Default")));
 
 // ≈ `providers: [{ provide: ITaskService, useClass: TaskService }]`.
-// Scoped: one instance per HTTP request (like the DbContext it depends on).
+// Scoped: one instance per HTTP request (like the DbContext they depend on).
 builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 var app = builder.Build();
 
