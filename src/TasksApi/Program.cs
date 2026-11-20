@@ -29,6 +29,10 @@ app.UseExceptionHandler();
 // Error responses without a body (e.g. 404 for an unknown route) also get a ProblemDetails.
 app.UseStatusCodePages();
 
+// Serves the web UI (wwwroot/index.html on "/"), ≈ ServeStaticModule in NestJS.
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

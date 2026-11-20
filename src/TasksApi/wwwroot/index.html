@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tasks API</title>
+  <link rel="stylesheet" href="css/app.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Tâches</h1>
+      <p class="subtitle">Chaque action envoie une vraie requête HTTP à l'API ASP.NET Core. L'inspecteur HTTP montre ce qui part et ce qui revient.</p>
+    </div>
+    <a class="topbar-link" href="/swagger" target="_blank" rel="noopener">Swagger ↗</a>
+  </header>
+
+  <div id="banner" class="banner" role="alert" hidden></div>
+
+  <main class="layout">
+    <section class="workspace">
+      <div class="stats">
+        <div class="stat"><span class="stat-value" id="stat-total">–</span><span class="stat-label">Total</span></div>
+        <div class="stat"><span class="stat-value" id="stat-pending">–</span><span class="stat-label">À faire</span></div>
+        <div class="stat"><span class="stat-value" id="stat-done">–</span><span class="stat-label">Faites</span></div>
+        <div class="stat stat-alert"><span class="stat-value" id="stat-overdue">–</span><span class="stat-label">En retard</span></div>
+      </div>
+
+      <div class="columns">
+        <aside class="card" aria-labelledby="categories-heading">
+          <h2 id="categories-heading">Catégories</h2>
+          <ul id="category-list" class="category-list"></ul>
+          <form id="category-form" class="inline-form" novalidate>
+            <input id="category-name" placeholder="Nouvelle catégorie" autocomplete="off" aria-label="Nom de la catégorie">
+            <button type="submit">Ajouter</button>
+          </form>
+          <p class="error" id="category-error"></p>
+        </aside>
+
+        <div class="main-column">
+          <form id="task-form" class="card" novalidate>
+            <h2 id="task-form-title">Nouvelle tâche</h2>
+            <label class="field">Titre
+              <input id="task-title" autocomplete="off">
+            </label>
+            <p class="error" data-error-for="Title"></p>
+            <label class="field">Description
+              <textarea id="task-description" rows="2"></textarea>
+            </label>
+            <div class="field-row">
+              <label class="field">Échéance
+                <input id="task-due" type="datetime-local">
+              </label>
+              <label class="field">Catégorie
+                <select id="task-category"></select>
+              </label>
+            </div>
+            <p class="error" id="task-form-error"></p>
+            <div class="form-actions">
+              <button type="submit" class="primary" id="task-submit">Ajouter la tâche</button>
+              <button type="button" id="task-cancel" hidden>Annuler</button>
+            </div>
+            <p class="hint">La validation est faite par le serveur : essayer d'envoyer un titre vide pour voir la réponse 400.</p>
+          </form>
+
+          <section class="card">
+            <div class="toolbar">
+              <input id="filter-search" type="search" placeholder="Rechercher…" aria-label="Rechercher">
+              <select id="filter-status" aria-label="Statut">
+                <option value="">Tous les statuts</option>
+                <option value="false">À faire</option>
+                <option value="true">Faites</option>
+              </select>
+              <select id="filter-category" aria-label="Catégorie"></select>
+              <label class="check"><input type="checkbox" id="filter-overdue"> En retard</label>
+              <select id="sort-by" aria-label="Trier par">
+                <option value="CreatedAt">Tri : création</option>
+                <option value="DueDate">Tri : échéance</option>
+                <option value="Title">Tri : titre</option>
+              </select>
+              <button type="button" id="sort-dir" title="Inverser l'ordre">↓ Décroissant</button>
+            </div>
+            <ul id="task-list" class="task-list"></ul>
+            <p id="task-empty" class="empty" hidden>Aucune tâche ne correspond.</p>
+            <nav class="pager">
+              <button type="button" id="page-prev">← Précédente</button>
+              <span id="page-info"></span>
+              <button type="button" id="page-next">Suivante →</button>
+            </nav>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <aside class="card inspector" aria-labelledby="inspector-heading">
+      <div class="inspector-head">
+        <h2 id="inspector-heading">Inspecteur HTTP</h2>
+        <button type="button" id="inspector-clear">Vider</button>
+      </div>
+      <p class="hint">Cliquer sur une requête pour voir son détail. Les écritures et les erreurs s'ouvrent seules.</p>
+      <ol id="inspector-list" class="inspector-list"></ol>
+    </aside>
+  </main>
+</body>
+</html>
