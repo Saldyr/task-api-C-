@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TasksApi.Data;
 using TasksApi.Errors;
+using TasksApi.Services;
 
 // Program.cs ≈ main.ts + AppModule: register services, then build the HTTP pipeline.
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,10 @@ builder.Services.AddExceptionHandler<ApiExceptionHandler>(); // ApiException →
 // replace the connection string with an in-memory SQLite database.
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Default")));
+
+// ≈ `providers: [{ provide: ITaskService, useClass: TaskService }]`.
+// Scoped: one instance per HTTP request (like the DbContext it depends on).
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 var app = builder.Build();
 
