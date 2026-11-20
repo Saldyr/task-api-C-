@@ -18,6 +18,13 @@ public class TasksController(ITaskService taskService) : ControllerBase
         return Ok(await taskService.GetAllAsync(query));
     }
 
+    // Literal "stats" route: no conflict with {id:int}, which only matches integers.
+    [HttpGet("stats")]
+    public async Task<ActionResult<TaskStatsDto>> GetStats()
+    {
+        return Ok(await taskService.GetStatsAsync());
+    }
+
     // {id:int}: route constraint, a non-integer id does not match → 404.
     [HttpGet("{id:int}")]
     public async Task<ActionResult<TaskDto>> GetById(int id)

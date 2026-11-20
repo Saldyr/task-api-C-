@@ -169,6 +169,23 @@ public class TasksEndpointsTests(TasksApiFactory factory) : IClassFixture<TasksA
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
+    [Fact]
+    public async Task GetStats_CountsTasksPerCategory()
+    {
+        var categoryResponse = await _client.PostAsJsonAsync("/api/categories", new { name = $"Stats {UniqueTag()}" });
+        var category = await categoryResponse.Content.ReadFromJsonAsync<CategoryDto>();
+        var first = await CreateTaskAsync("Stat 1", categoryId: category!.Id);
+        await CreateTaskAsync("Stat 2", categoryId: category.Id);
+        await _client.PatchAsJsonAsync($"/api/tasks/{first.Id}/status", new { isDone = true });
+
+        var stats = await _client.GetFromJsonAsync<TaskStatsDto>("/api/tasks/stats");
+
+        var forCategory = Assert.Single(stats!.ByCategory, c => c.CategoryId == category.Id);
+        Assert.Equal(2, forCategory.Total);
+        Assert.Equal(1, forCategory.Done);
+        Assert.Equal(stats.Total, stats.Done + stats.Pending);
+    }
+
     // Tests share the same database: a unique tag isolates each test's data.
     private static string UniqueTag() => Guid.NewGuid().ToString("N")[..8];
 

@@ -125,6 +125,26 @@ public class TaskService(AppDbContext db) : ITaskService
         return true;
     }
 
+    public async Task<TaskStatsDto> GetStatsAsync()
+    {
+        var now = DateTime.UtcNow;
+
+        // Queries run one after another: a DbContext does not support
+        // concurrent queries (no Promise.all here).
+        var total = await db.Tasks.CountAsync();
+        var done = await db.Tasks.CountAsync(t => t.IsDone);
+        var overdue = await db.Tasks.CountAsync(t => !t.IsDone && t.DueDate < now);
+        var uncategorized = await db.Tasks.CountAsync(t => t.CategoryId == null);
+
+        // EF Core translates these Count() calls into SQL subqueries: nothing is loaded into memory.
+        var byCategory = await db.Categories
+            .OrderBy(c => c.Name)
+            .Select(c => new CategoryStatsDto(c.Id, c.Name, c.Tasks.Count, c.Tasks.Count(t => t.IsDone)))
+            .ToListAsync();
+
+        return new TaskStatsDto(total, done, total - done, overdue, uncategorized, byCategory);
+    }
+
     private static IQueryable<TaskItem> Sort(IQueryable<TaskItem> query, TaskSortField sortBy, SortDirection dir)
     {
         var desc = dir == SortDirection.Desc;

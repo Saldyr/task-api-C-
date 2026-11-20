@@ -13,4 +13,5 @@ public interface ITaskService
     Task<bool> UpdateAsync(int id, UpdateTaskDto dto);
     Task<TaskDto?> SetStatusAsync(int id, bool isDone);
     Task<bool> DeleteAsync(int id);
+    Task<TaskStatsDto> GetStatsAsync();
 }
